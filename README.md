@@ -1,32 +1,32 @@
 # Indicium Tech Code Challenge
 
-Code challenge for Software Developer with focus in data projects.
+Desafio de código para Desenvolvedor de Software com foco em projetos de dados.
 
 
 ## Context
 
-At Indicium we have many projects where we develop the whole data pipeline for our client, from extracting data from many data sources to loading this data at its final destination, with this final destination varying from a data warehouse for a Business Intelligency tool to an api for integrating with third party systems.
+Na Indicium temos muitos projetos onde desenvolvemos todo o pipeline de dados do nosso cliente, desde a extração de dados de diversas fontes de dados até o carregamento desses dados em seu destino final, sendo que esse destino final varia desde um data warehouse para uma ferramenta de Business Intelligence até uma API para integração com sistemas de terceiros.
 
-As a software developer with focus in data projects your mission is to plan, develop, deploy, and maintain a data pipeline.
+Como desenvolvedor de software com foco em projetos de dados, sua missão é planejar, desenvolver, implantar e manter um pipeline de dados.
 
 
 ## The Challenge
 
-We are going to provide 2 data sources, a PostgreSQL database and a CSV file.
+Forneceremos 2 fontes de dados, um banco de dados PostgreSQL e um arquivo CSV.
 
-The CSV file represents details of orders from an ecommerce system.
+O arquivo CSV representa detalhes de pedidos de um sistema de comércio eletrônico.
 
-The database provided is a sample database provided by microsoft for education purposes called northwind, the only difference is that the **order_detail** table does not exists in this database you are beeing provided with. This order_details table is represented by the CSV file we provide.
+O banco de dados fornecido é um banco de dados de amostra fornecido pela Microsoft para fins educacionais chamado Northwind. A única diferença é que a tabela **order_detail** não existe neste banco de dados que você está recebendo. Esta tabela order_details é representada pelo arquivo CSV que fornecemos.
 
-Schema of the original Northwind Database: 
+Esquema do banco de dados Northwind original:
 
 ![image](https://user-images.githubusercontent.com/49417424/105997621-9666b980-608a-11eb-86fd-db6b44ece02a.png)
 
-Your challenge is to build a pipeline that extracts the data everyday from both sources and write the data first to local disk, and second to a PostgreSQL database. For this challenge, the CSV file and the database will be static, but in any real world project, both data sources would be changing constantly.
+Seu desafio é construir um pipeline que extraia os dados todos os dias de ambas as fontes e grave os dados primeiro no disco local e depois em um banco de dados PostgreSQL. Para este desafio, o arquivo CSV e o banco de dados serão estáticos, mas em qualquer projeto do mundo real, ambas as fontes de dados mudariam constantemente.
 
-Its important that all writing steps (writing data from inputs to local filesystem and writing data from local filesystem to PostgreSQL database) are isolated from each other, you shoud be able to run any step without executing the others.
+É importante que todas as etapas de gravação (gravação de dados de entradas no sistema de arquivos local e gravação de dados do sistema de arquivos local no banco de dados PostgreSQL) sejam isoladas umas das outras, você deve ser capaz de executar qualquer etapa sem executar as outras.
 
-For the first step, where you write data to local disk, you should write one file for each table. This pipeline will run everyday, so there should be a separation in the file paths you will create for each source(CSV or Postgres), table and execution day combination, e.g.:
+Para a primeira etapa, onde você grava dados no disco local, você deve gravar um arquivo para cada tabela. Este pipeline será executado todos os dias, portanto deve haver uma separação nos caminhos dos arquivos que você criará para cada combinação de origem (CSV ou Postgres), tabela e dia de execução, por exemplo:
 
 ```
 /data/postgres/{table}/2024-01-01/file.format
@@ -34,17 +34,17 @@ For the first step, where you write data to local disk, you should write one fil
 /data/csv/2024-01-02/file.format
 ```
 
-You are free to chose the naming and the format of the file you are going to save.
+Você é livre para escolher o nome e o formato do arquivo que deseja salvar.
 
-At step 2, you should load the data from the local filesystem, which you have created, to the final database.
+Na etapa 2, você deve carregar os dados do sistema de arquivos local que você criou para o banco de dados final.
 
-The final goal is to be able to run a query that shows the orders and its details. The Orders are placed in a table called **orders** at the postgres Northwind database. The details are placed at the csv file provided, and each line has an **order_id** field pointing the **orders** table.
+O objetivo final é poder executar uma consulta que mostre os pedidos e seus detalhes. Os pedidos são colocados em uma tabela chamada **orders** no banco de dados postgres Northwind. Os detalhes são colocados no arquivo csv fornecido e cada linha possui um campo **order_id** apontando para a tabela **orders**.
 
 ## Solution Diagram
 
-As Indicium uses some standard tools, the challenge was designed to be done using some of these tools.
+Como o Indicium utiliza algumas ferramentas padrão, o desafio foi pensado para ser realizado utilizando algumas dessas ferramentas.
 
-The following tools should be used to solve this challenge.
+As seguintes ferramentas devem ser usadas para resolver este desafio.
 
 Scheduler:
 - [Airflow](https://airflow.apache.org/docs/apache-airflow/stable/installation/index.html)
@@ -57,28 +57,28 @@ Data Loader:
 Database:
 - [PostgreSQL](https://www.postgresql.org/docs/15/index.html)
 
-The solution should be based on the diagrams below:
+A solução deve ser baseada nos diagramas abaixo:
 ![image](docs/diagrama_embulk_meltano.jpg)
 
 
 ### Requirements
 
-- You **must** use the tools described above to complete the challenge.
-- All tasks should be idempotent, you should be able to run the pipeline everyday and, in this case where the data is static, the output shold be the same.
-- Step 2 depends on both tasks of step 1, so you should not be able to run step 2 for a day if the tasks from step 1 did not succeed.
-- You should extract all the tables from the source database, it does not matter that you will not use most of them for the final step.
-- You should be able to tell where the pipeline failed clearly, so you know from which step you should rerun the pipeline.
-- You have to provide clear instructions on how to run the whole pipeline. The easier the better.
-- You must provide evidence that the process has been completed successfully, i.e. you must provide a csv or json with the result of the query described above.
-- You should assume that it will run for different days, everyday.
-- Your pipeline should be prepared to run for past days, meaning you should be able to pass an argument to the pipeline with a day from the past, and it should reprocess the data for that day. Since the data for this challenge is static, the only difference for each day of execution will be the output paths.
+- Você **deve** usar as ferramentas descritas acima para completar o desafio.
+- Todas as tarefas devem ser independentes, você deve poder executar o pipeline todos os dias e, neste caso onde os dados são estáticos, a saída deve ser a mesma.
+- A etapa 2 depende de ambas as tarefas da etapa 1, portanto você não poderá executar a etapa 2 por um dia se as tarefas da etapa 1 não forem bem-sucedidas.
+- Você deve extrair todas as tabelas do banco de dados de origem, não importa que você não utilizará a maioria delas para a etapa final.
+- Você deve ser capaz de dizer claramente onde o pipeline falhou, para saber em qual etapa deve executar novamente o pipeline.
+- Você deve fornecer instruções claras sobre como executar todo o pipeline. Quanto mais fácil, melhor.
+- Você deve fornecer evidências de que o processo foi concluído com sucesso, ou seja, você deve fornecer um csv ou json com o resultado da consulta descrita acima.
+- Você deve assumir que funcionará em dias diferentes, todos os dias.
+- Seu pipeline deve estar preparado para ser executado nos dias anteriores, o que significa que você poderá passar um argumento para o pipeline com um dia anterior e ele deverá reprocessar os dados desse dia. Como os dados deste desafio são estáticos, a única diferença para cada dia de execução serão os caminhos de saída.
 
-### Things that Matters
+### Coisas importantes
 
-- Clean and organized code.
-- Good decisions at which step (which database, which file format..) and good arguments to back those decisions up.
-- The aim of the challenge is not only to assess technical knowledge in the area, but also the ability to search for information and use it to solve problems with tools that are not necessarily known to the candidate.
-- Point and click tools are not allowed.
+- Código limpo e organizado.
+- Boas decisões em qual etapa (qual banco de dados, qual formato de arquivo...) e bons argumentos para apoiar essas decisões.
+- O objetivo do desafio não é apenas avaliar o conhecimento técnico na área, mas também a capacidade de buscar informações e utilizá-las para resolver problemas com ferramentas que não necessariamente são do conhecimento do candidato.
+- Ferramentas de apontar e clicar não são permitidas.
 
 
-Thank you for participating!
+Obrigado por participar!
